@@ -681,6 +681,44 @@ body {
   margin-bottom: 1.5rem;
   border-radius: 6px;
   border: 1px solid rgba(212, 175, 55, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.soal-image:hover {
+  transform: scale(1.08);
+}
+
+.svg-card-main {
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.svg-card-main:hover {
+  border-color: var(--secondary-color);
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+  transform: translateY(-2px);
+}
+
+.option-item svg {
+  transition: transform 0.3s ease;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 6px;
+  padding: 5px;
+  margin-top: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.option-item:hover svg {
+  transform: scale(1.08);
+  border-color: var(--secondary-color);
 }
 
 .options-list {
@@ -770,13 +808,13 @@ body {
   padding: 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .kraepelin-columns {
   display: flex;
-  gap: 2rem;
-  height: 380px;
+  gap: 1.5rem;
+  height: 620px;
   align-items: flex-end;
 }
 

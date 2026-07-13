@@ -432,7 +432,14 @@ function playSoundEffect(type) {
   }
 }
 
-// 3. LOGIKA SIMULASI TES KECERDASAN & KEPRIBADIAN
+// 3. LOGIKA SIMULASI TES KECERDASAN & KEPRIBADIAN & SPASIAL
+function getActiveQuestions() {
+  if (appState.currentTestType === 'kecerdasan') return KECERDASAN_QUESTIONS;
+  if (appState.currentTestType === 'kepribadian') return KEPRIBADIAN_QUESTIONS;
+  if (appState.currentTestType === 'gambar') return SPASIAL_QUESTIONS;
+  return [];
+}
+
 function startPsychotest(type) {
   appState.currentTestType = type;
   appState.currentQuestionIndex = 0;
@@ -453,6 +460,10 @@ function startPsychotest(type) {
     document.getElementById('running-test-title').innerText = 'Simulasi Tes Kecerdasan & Logika';
     durationSeconds = 10 * 60; // 10 menit
     speakText = "Simulasi tes kecerdasan dimulai. Waktu Anda sepuluh menit. Selamat mengerjakan!";
+  } else if (type === 'gambar') {
+    document.getElementById('running-test-title').innerText = 'Simulasi Mencocokkan Gambar Spasial';
+    durationSeconds = 8 * 60; // 8 menit
+    speakText = "Simulasi tes mencocokkan gambar dimulai. Waktu Anda delapan menit. Perhatikan detail bentuk gambar.";
   } else {
     document.getElementById('running-test-title').innerText = 'Simulasi Karakteristik Kepribadian (EPPS)';
     durationSeconds = 0; // Tanpa batas waktu
@@ -487,7 +498,7 @@ function startPsychotest(type) {
 
 function renderQuestion() {
   const container = document.getElementById('soal-container');
-  const questions = appState.currentTestType === 'kecerdasan' ? KECERDASAN_QUESTIONS : KEPRIBADIAN_QUESTIONS;
+  const questions = getActiveQuestions();
   const question = questions[appState.currentQuestionIndex];
   
   // Progress Bar
@@ -504,7 +515,7 @@ function renderQuestion() {
   container.innerHTML = `
     <div class="soal-card animate-slide-in">
       <p class="soal-number" style="font-size: 0.85rem; color: var(--secondary-color); font-weight: 700; margin-bottom: 0.5rem; text-transform: uppercase;">Pertanyaan ${appState.currentQuestionIndex + 1} dari ${questions.length}</p>
-      <div class="soal-text">${question.question.replace(/\n/g, '<br>')}</div>
+      <div class="soal-text">${question.question}</div>
       <div class="options-list">
         ${optionsHTML}
       </div>
@@ -523,14 +534,14 @@ function renderQuestion() {
 }
 
 function selectOption(key) {
-  const questions = appState.currentTestType === 'kecerdasan' ? KECERDASAN_QUESTIONS : KEPRIBADIAN_QUESTIONS;
+  const questions = getActiveQuestions();
   const question = questions[appState.currentQuestionIndex];
   appState.userAnswers[question.id] = key;
   renderQuestion(); // Re-render to update selected state
 }
 
 function nextQuestion() {
-  const questions = appState.currentTestType === 'kecerdasan' ? KECERDASAN_QUESTIONS : KEPRIBADIAN_QUESTIONS;
+  const questions = getActiveQuestions();
   if (appState.currentQuestionIndex < questions.length - 1) {
     appState.currentQuestionIndex++;
     renderQuestion();
@@ -568,10 +579,10 @@ function startKraepelinTest() {
 
   document.getElementById('running-test-title').innerText = 'Simulasi Tes Kraepelin (Koran)';
   
-  // Generate Kraepelin Numbers: 10 columns, each has 12 numbers
-  for (let c = 0; c < 10; c++) {
+  // Generate Kraepelin Numbers: 30 columns, each has 20 numbers
+  for (let c = 0; c < 30; c++) {
     const colNums = [];
-    for (let r = 0; r < 12; r++) {
+    for (let r = 0; r < 20; r++) {
       colNums.push(Math.floor(Math.random() * 9) + 1); // 1 to 9
     }
     appState.kraepelinState.columns.push({
@@ -588,8 +599,8 @@ function startKraepelinTest() {
     appState.timeLeft--;
     updateTimerDisplay();
     
-    // Pindah kolom otomatis setiap 12 detik untuk meniru aba-aba "PINDAH!"
-    if (appState.timeLeft > 0 && appState.timeLeft % 12 === 0) {
+    // Pindah kolom otomatis setiap 4 detik untuk meniru aba-aba "PINDAH!" secara berkala pada 30 kolom
+    if (appState.timeLeft > 0 && appState.timeLeft % 4 === 0) {
       nextKraepelinColumn();
     }
 
@@ -703,7 +714,7 @@ function finishTest() {
   clearInterval(appState.timerInterval);
   playSoundEffect('finish');
 
-  const questions = appState.currentTestType === 'kecerdasan' ? KECERDASAN_QUESTIONS : KEPRIBADIAN_QUESTIONS;
+  const questions = getActiveQuestions();
   let correctCount = 0;
   let answeredCount = 0;
 
@@ -720,9 +731,19 @@ function finishTest() {
   const score = Math.round((correctCount / questions.length) * 100);
   const isMS = score >= 70; // Standar kelulusan TNI AD
 
+  let displayCategory = 'Tes Kecerdasan';
+  let timeLimit = 10 * 60;
+  if (appState.currentTestType === 'kepribadian') {
+    displayCategory = 'Tes Kepribadian';
+    timeLimit = 0;
+  } else if (appState.currentTestType === 'gambar') {
+    displayCategory = 'Mencocokkan Gambar Spasial';
+    timeLimit = 8 * 60;
+  }
+
   const resultData = {
     date: new Date().toLocaleString('id-ID'),
-    category: appState.currentTestType === 'kecerdasan' ? 'Tes Kecerdasan' : 'Tes Kepribadian',
+    category: displayCategory,
     score: score,
     accuracy: `${accuracy}%`,
     status: isMS ? 'MS' : 'TMS',
@@ -746,7 +767,13 @@ function finishTest() {
   document.getElementById('result-category').innerText = resultData.category;
   document.getElementById('result-score').innerText = resultData.score;
   document.getElementById('result-accuracy').innerText = resultData.accuracy;
-  document.getElementById('result-time-taken').innerText = appState.currentTestType === 'kecerdasan' ? `${Math.floor((10*60 - appState.timeLeft)/60)} Menit ${ (10*60 - appState.timeLeft)%60 } Detik` : "Mandiri";
+  
+  if (timeLimit > 0) {
+    const elapsed = timeLimit - appState.timeLeft;
+    document.getElementById('result-time-taken').innerText = `${Math.floor(elapsed / 60)} Menit ${elapsed % 60} Detik`;
+  } else {
+    document.getElementById('result-time-taken').innerText = "Mandiri";
+  }
 
   const seal = document.getElementById('result-seal-status');
   const statusTitle = document.getElementById('result-status-title');
