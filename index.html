@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ksatria Test - Simulasi & Pembelajaran Psikotes Seleksi TNI AD</title>
+  <!-- Google Fonts: Orbitron & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@600;800;900&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js for Radar Chart -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Grid Effect -->
+  <div class="grid-overlay"></div>
+
+  <!-- Main Navigation Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="kartika_eka_paksi.png" alt="Kartika Eka Paksi" style="width: 45px; height: 45px; object-fit: contain;">
+      <div class="brand-text">
+        <h1>KSATRIA TEST</h1>
+        <span>TNI AD PREPARATION</span>
+      </div>
+    </div>
+    <nav class="nav-menu">
+      <button class="nav-item active" data-tab="dashboard" id="btn-dashboard">
+        <i data-lucide="layout-dashboard"></i> Dashboard
+      </button>
+      <button class="nav-item" data-tab="belajar" id="btn-belajar">
+        <i data-lucide="book-open"></i> Modul Belajar
+      </button>
+      <button class="nav-item" data-tab="simulasi" id="btn-simulasi">
+        <i data-lucide="shield-alert"></i> Simulasi Tes
+      </button>
+      <button class="nav-item" data-tab="riwayat" id="btn-riwayat">
+        <i data-lucide="history"></i> Riwayat & Statistik
+      </button>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="motto">"KARTIKA EKA PAKSI"</div>
+      <div class="version">Versi 1.1.0</div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    
+    <!-- Top Header Bar -->
+    <header class="top-bar">
+      <div class="welcome-text">
+        <h2 id="greeting-title">Siap Grak, Calon Prajurit!</h2>
+        <p>Persiapkan mental dan fisik untuk pengabdian NKRI.</p>
+      </div>
+      <div class="user-status-card">
+        <div class="avatar">🇮🇩</div>
+        <div class="status-info">
+          <span class="name">Prajurit Siswa (Muda)</span>
+          <span class="rank-badge" id="rank-badge">Persiapan Tahap I</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Sections (SPA Tabs) -->
+    <div class="content-body">
+      
+      <!-- DASHBOARD TAB -->
+      <section id="dashboard" class="tab-content active">
+        <div class="stats-grid">
+          <div class="stat-card glass animate-slide-in">
+            <div class="icon-wrapper green"><i data-lucide="award"></i></div>
+            <div class="stat-details">
+              <h3>Rata-rata Skor</h3>
+              <p class="stat-value" id="avg-score">0</p>
+              <span class="stat-desc">Target Kelulusan: ≥ 70</span>
+            </div>
+          </div>
+          <div class="stat-card glass animate-slide-in" style="animation-delay: 0.1s;">
+            <div class="icon-wrapper gold"><i data-lucide="zap"></i></div>
+            <div class="stat-details">
+              <h3>Tes Diselesaikan</h3>
+              <p class="stat-value" id="tests-completed">0</p>
+              <span class="stat-desc">Terus asah ketangkasan Anda</span>
+            </div>
+          </div>
+          <div class="stat-card glass animate-slide-in" style="animation-delay: 0.2s;">
+            <div class="icon-wrapper red"><i data-lucide="bar-chart-3"></i></div>
+            <div class="stat-details">
+              <h3>Rata-rata Akurasi</h3>
+              <p class="stat-value" id="avg-accuracy">0%</p>
+              <span class="stat-desc">Kraepelin & Kecerdasan</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-8 glass main-dashboard-card animate-slide-in" style="animation-delay: 0.3s;">
+            <div class="card-header">
+              <h3>Selamat Datang di Portal Ksatria Test</h3>
+            </div>
+            <p>Portal ini dikembangkan khusus sebagai sarana latihan psikotes standar seleksi TNI Angkatan Darat (AD). Di sini Anda dapat melatih berbagai materi penting seperti <b>Tes Kecerdasan/Verbal, Numerik, Spasial, Kraepelin (Koran), dan Karakteristik Kepribadian (EPPS).</b></p>
+            <div class="dashboard-banner">
+              <div class="banner-content">
+                <h4>Siap Latihan Hari Ini?</h4>
+                <p>Ambil simulasi berdurasi penuh untuk menguji ketahanan mental Anda.</p>
+                <button class="btn btn-primary" onclick="switchTab('simulasi')"><i data-lucide="play"></i> Mulai Simulasi Sekarang</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-4 glass right-dashboard-card animate-slide-in" style="animation-delay: 0.4s;">
+            <div class="card-header">
+              <h3>Kategori Kesiapan</h3>
+            </div>
+            <div class="readiness-meter">
+              <div class="meter-circle">
+                <span class="meter-percentage" id="readiness-pct">0%</span>
+                <span class="meter-label">SIAP SELEKSI</span>
+              </div>
+            </div>
+            <div class="readiness-details">
+              <p class="status-indicator-text" id="readiness-text">Belum ada riwayat tes. Silakan kerjakan minimal satu simulasi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- BELAJAR TAB -->
+      <section id="belajar" class="tab-content">
+        <div class="section-title">
+          <h2>Modul Pembelajaran & Strategi Psikotes TNI AD</h2>
+          <p>Materi penting dan kiat-kiat praktis dalam menyelesaikan soal ujian psikologi militer.</p>
+        </div>
+        <div class="modul-grid">
+          <div class="modul-card glass">
+            <div class="modul-icon"><i data-lucide="brain"></i></div>
+            <h3>Tes Kecerdasan & Verbal</h3>
+            <p>Mengukur kemampuan berpikir logis, analitis, asosiasi makna, serta pemahaman verbal umum. Sangat krusial untuk menentukan kualifikasi calon prajurit.</p>
+            <div class="tips-box">
+              <strong>Tips Sukses:</strong> Fokus pada padanan kata, antonim, analogi, dan bacaan berulang untuk pemahaman logika induktif/deduktif.
+            </div>
+          </div>
+          <div class="modul-card glass">
+            <div class="modul-icon"><i data-lucide="binary"></i></div>
+            <h3>Tes Numerik & Aritmatika</h3>
+            <p>Mengukur kecepatan berpikir logis kuantitatif, analisis angka, kemampuan berhitung cepat, serta konsistensi daya konsentrasi dalam durasi tertentu.</p>
+            <div class="tips-box">
+              <strong>Tips Sukses:</strong> Kenali pola deret angka (penjumlahan, pengurangan, kuadrat, selang-seling) secara cepat tanpa coretan berlebih.
+            </div>
+          </div>
+          <div class="modul-card glass">
+            <div class="modul-icon"><i data-lucide="shapes"></i></div>
+            <h3>Tes Spasial & Logika Gambar</h3>
+            <p>Mengukur kemampuan membayangkan dan merotasi bangun ruang, mencocokkan potongan pola gambar, serta konsistensi logika visual.</p>
+            <div class="tips-box">
+              <strong>Tips Sukses:</strong> Perhatikan rotasi searah/berlawanan jarum jam, perubahan jumlah elemen/garis, serta arsiran pada objek gambar.
+            </div>
+          </div>
+          <div class="modul-card glass">
+            <div class="modul-icon"><i data-lucide="clipboard-list"></i></div>
+            <h3>Tes Kraepelin / Pauli (Koran)</h3>
+            <p>Mengukur daya tahan kerja (endurance), ketelitian, konsistensi (stabilitas emosi), kecepatan kerja, dan adaptabilitas di bawah tekanan ekstrim.</p>
+            <div class="tips-box">
+              <strong>Tips Sukses:</strong> Jaga ritme ketukan jari dan konsentrasi. Lakukan penjumlahan angka yang berdampingan dari bawah ke atas dengan cepat dan stabil.
+            </div>
+          </div>
+          <div class="modul-card glass">
+            <div class="modul-icon"><i data-lucide="user-check"></i></div>
+            <h3>Tes Kepribadian & Sikap (EPPS/PAPI)</h3>
+            <p>Mengukur profil kepribadian, kestabilan kepemimpinan, kepatuhan terhadap aturan, serta kecocokan dengan nilai keprajuritan TNI.</p>
+            <div class="tips-box">
+              <strong>Tips Sukses:</strong> Jawablah dengan jujur namun pilihlah opsi yang menunjukkan motivasi berprestasi tinggi, kedisiplinan, kerja sama tim, dan kepemimpinan yang tegas.
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SIMULASI TAB -->
+      <section id="simulasi" class="tab-content">
+        
+        <!-- SELEKSI JENIS TES -->
+        <div id="simulasi-selection">
+          <div class="section-title">
+            <h2>Pilih Kategori Psikotes</h2>
+            <p>Silakan pilih simulasi tes yang ingin Anda latih hari ini. Disarankan melakukan simulasi bergantian untuk hasil maksimal.</p>
+          </div>
+          <div class="test-selection-grid">
+            
+            <div class="test-selection-card glass">
+              <div class="card-badge">AKURASI</div>
+              <h3>Simulasi Kecerdasan & Logika</h3>
+              <p>Terdiri dari Tes Sinonim, Analogi, Deret Angka, dan Spasial. Dirancang untuk meniru kompleksitas tes sesungguhnya.</p>
+              <div class="test-meta">
+                <span><i data-lucide="clock"></i> 10 Menit</span>
+                <span><i data-lucide="help-circle"></i> 15 Soal</span>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="startPsychotest('kecerdasan')">Mulai Tes Kecerdasan</button>
+            </div>
+
+            <div class="test-selection-card glass">
+              <div class="card-badge kraepelin">KETAHANAN</div>
+              <h3>Simulasi Kraepelin (Tes Koran)</h3>
+              <p>Simulasi menjumlahkan deret angka dari bawah ke atas secara cepat dan beruntun dalam rentang waktu per kolom yang ketat.</p>
+              <div class="test-meta">
+                <span><i data-lucide="clock"></i> 2 Menit (Simulasi)</span>
+                <span><i data-lucide="help-circle"></i> Tanpa Batas Kolom</span>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="startKraepelinTest()">Mulai Tes Kraepelin</button>
+            </div>
+
+            <div class="test-selection-card glass">
+              <div class="card-badge personality">KEPRIBADIAN</div>
+              <h3>Simulasi Tes Karakteristik (EPPS)</h3>
+              <p>Mengidentifikasi profil kepribadian Anda berdasarkan aspek loyalitas, kedisiplinan, dorongan berprestasi, dan stabilitas emosi.</p>
+              <div class="test-meta">
+                <span><i data-lucide="clock"></i> Tanpa Batas Waktu</span>
+                <span><i data-lucide="help-circle"></i> 10 Pertanyaan Opsi</span>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="startPsychotest('kepribadian')">Mulai Tes Kepribadian</button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- SIMULASI RUNNING INTERFACE -->
+        <div id="simulasi-running" class="glass hide">
+          <div class="simulasi-header">
+            <div class="test-info">
+              <h3 id="running-test-title">Tes Kecerdasan & Logika</h3>
+              <div class="progress-bar-container">
+                <div class="progress-bar-fill" id="running-progress-fill" style="width: 0%;"></div>
+              </div>
+            </div>
+            <div class="timer-card">
+              <i data-lucide="clock"></i>
+              <span id="running-timer">00:00</span>
+            </div>
+          </div>
+
+          <!-- CONTAINER SOAL KECERDASAN/KEPRIBADIAN -->
+          <div id="soal-container" class="soal-container">
+            <!-- Soal di-inject secara dinamis via JS -->
+          </div>
+
+          <!-- KRAEPELIN CONTAINER -->
+          <div id="kraepelin-container" class="kraepelin-container hide">
+            <div class="kraepelin-instruction-bar">
+              <p><i data-lucide="info"></i> Jumlahkan dua angka yang berdekatan dari bawah ke atas, kemudian ketik angka terakhir (contoh: 7 + 8 = 15, ketik 5).</p>
+            </div>
+            <div class="kraepelin-board-wrapper">
+              <div class="kraepelin-columns" id="kraepelin-columns-container">
+                <!-- Kolom angka kraepelin di-inject secara dinamis -->
+              </div>
+            </div>
+            <div class="kraepelin-keyboard">
+              <button onclick="pressKraepelinNum(0)">0</button>
+              <button onclick="pressKraepelinNum(1)">1</button>
+              <button onclick="pressKraepelinNum(2)">2</button>
+              <button onclick="pressKraepelinNum(3)">3</button>
+              <button onclick="pressKraepelinNum(4)">4</button>
+              <button onclick="pressKraepelinNum(5)">5</button>
+              <button onclick="pressKraepelinNum(6)">6</button>
+              <button onclick="pressKraepelinNum(7)">7</button>
+              <button onclick="pressKraepelinNum(8)">8</button>
+              <button onclick="pressKraepelinNum(9)">9</button>
+            </div>
+          </div>
+
+          <div class="simulasi-navigation" id="normal-navigation">
+            <button class="btn btn-secondary" id="btn-prev" onclick="prevQuestion()"><i data-lucide="chevron-left"></i> Sebelumnya</button>
+            <button class="btn btn-primary" id="btn-next" onclick="nextQuestion()">Berikutnya <i data-lucide="chevron-right"></i></button>
+            <button class="btn btn-success hide" id="btn-submit" onclick="finishTest()">Kirim & Lihat Hasil <i data-lucide="check"></i></button>
+          </div>
+        </div>
+
+        <!-- ANALISIS & HASIL TEST -->
+        <div id="simulasi-result" class="glass hide">
+          <div class="result-header">
+            <div class="result-badge-container">
+              <div class="result-seal" id="result-seal-status">MS</div>
+              <h2 id="result-status-title">Memenuhi Syarat (MS)</h2>
+              <p id="result-status-desc">Hasil psikotes Anda menunjukkan kecocokan tinggi dengan karakteristik prajurit TNI AD.</p>
+            </div>
+          </div>
+
+          <div class="result-details-grid">
+            <div class="result-chart-card">
+              <h4>Grafik Performa Kompetensi</h4>
+              <div class="chart-wrapper">
+                <canvas id="performance-chart"></canvas>
+              </div>
+            </div>
+
+            <div class="result-stats-card">
+              <h4>Detail Skor & Analisis Kesiapan</h4>
+              <ul class="result-list">
+                <li>
+                  <span class="label">Kategori Tes</span>
+                  <strong class="value" id="result-category">Tes Kecerdasan</strong>
+                </li>
+                <li>
+                  <span class="label">Nilai Akhir</span>
+                  <strong class="value" id="result-score">85</strong>
+                </li>
+                <li>
+                  <span class="label">Persentase Akurasi</span>
+                  <strong class="value" id="result-accuracy">92%</strong>
+                </li>
+                <li>
+                  <span class="label">Waktu Pengerjaan</span>
+                  <strong class="value" id="result-time-taken">04:32</strong>
+                </li>
+              </ul>
+              <div class="evaluation-box" id="result-evaluation-box">
+                <!-- Kalimat evaluasi di-inject di sini -->
+              </div>
+              <div class="result-actions">
+                <button class="btn btn-primary" onclick="backToSelection()"><i data-lucide="refresh-cw"></i> Coba Tes Lain</button>
+                <button class="btn btn-secondary" onclick="viewDetailedAnswers()"><i data-lucide="list-todo"></i> Pembahasan Soal</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- DETAIL JAWABAN & PEMBAHASAN -->
+          <div id="pembahasan-section" class="pembahasan-section hide">
+            <h3>Kunci Jawaban & Pembahasan Detail</h3>
+            <div class="pembahasan-list" id="pembahasan-list-container">
+              <!-- Di-inject dinamis -->
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIWAYAT TAB -->
+      <section id="riwayat" class="tab-content">
+        <div class="section-title">
+          <h2>Statistik & Riwayat Latihan</h2>
+          <p>Pantau perkembangan hasil belajar Anda dari waktu ke waktu untuk mengidentifikasi area yang perlu ditingkatkan.</p>
+        </div>
+
+        <div class="row">
+          <div class="col-8 glass">
+            <h3>Daftar Riwayat Ujian</h3>
+            <div class="table-container">
+              <table class="history-table">
+                <thead>
+                  <tr>
+                    <th>Tanggal & Waktu</th>
+                    <th>Kategori Psikotes</th>
+                    <th>Nilai Akhir</th>
+                    <th>Akurasi</th>
+                    <th>Status Kelulusan</th>
+                  </tr>
+                </thead>
+                <tbody id="history-table-body">
+                  <!-- Data di-inject via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="col-4 glass">
+            <h3>Saran Pengembangan</h3>
+            <div class="saran-list" id="saran-container">
+              <div class="saran-item">
+                <i data-lucide="info"></i>
+                <p>Belum ada saran. Silakan selesaikan beberapa latihan agar sistem dapat menganalisis kelemahan Anda.</p>
+              </div>
+            </div>
+            <button class="btn btn-danger btn-block" style="margin-top: 1.5rem;" onclick="clearHistoryData()"><i data-lucide="trash-2"></i> Hapus Riwayat Latihan</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- JS Implementation -->
+  <script src="app.js"></script>
+</body>
+</html>
