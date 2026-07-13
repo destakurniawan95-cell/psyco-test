@@ -229,9 +229,31 @@
               <p>Tes mencocokkan bentuk, jaring-jaring bangun ruang, pola gambar, dan rotasi visual yang sesuai dengan citra utama.</p>
               <div class="test-meta">
                 <span><i data-lucide="clock"></i> 8 Menit</span>
-                <span><i data-lucide="help-circle"></i> 10 Soal Gambar</span>
+                <span><i data-lucide="help-circle"></i> 5 Soal Gambar</span>
               </div>
               <button class="btn btn-primary btn-block" onclick="startPsychotest('gambar')">Mulai Tes Mencocokkan Gambar</button>
+            </div>
+
+            <div class="test-selection-card glass">
+              <div class="card-badge" style="background: rgba(91, 192, 222, 0.15); color: var(--info-color); border-color: var(--info-color);">PROYEKTIF</div>
+              <h3>Tes Wartegg (Melengkapi Gambar)</h3>
+              <p>Menguji kreativitas, imajinasi, dan struktur kepribadian dengan melengkapi 8 pola kotak stimulasi gambar bawaan.</p>
+              <div class="test-meta">
+                <span><i data-lucide="clock"></i> Tanpa Batas</span>
+                <span><i data-lucide="help-circle"></i> 8 Kotak Kanvas</span>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="startWarteggTest()">Mulai Tes Wartegg</button>
+            </div>
+
+            <div class="test-selection-card glass">
+              <div class="card-badge" style="background: rgba(92, 184, 92, 0.15); color: var(--success-color); border-color: var(--success-color);">GAMBAR</div>
+              <h3>Tes Menggambar (Orang, Pohon, Rumah)</h3>
+              <p>Menggambar Manusia Lengkap (Draw a Person), Pohon Berkambium (Draw a Tree), atau kombinasi Rumah-Pohon-Orang (HTP).</p>
+              <div class="test-meta">
+                <span><i data-lucide="clock"></i> Tanpa Batas</span>
+                <span><i data-lucide="help-circle"></i> Kanvas Sketsa</span>
+              </div>
+              <button class="btn btn-primary btn-block" onclick="startDrawingTest()">Mulai Tes Menggambar</button>
             </div>
 
           </div>
@@ -278,6 +300,38 @@
               <button onclick="pressKraepelinNum(7)">7</button>
               <button onclick="pressKraepelinNum(8)">8</button>
               <button onclick="pressKraepelinNum(9)">9</button>
+            </div>
+            </div>
+          </div>
+
+          <!-- WARTEGG CONTAINER -->
+          <div id="wartegg-container" class="wartegg-container hide">
+            <div class="kraepelin-instruction-bar" style="margin-bottom:1.5rem;">
+              <p><i data-lucide="info"></i> Lengkapi stimulus gambar sederhana pada masing-masing 8 kotak kanvas di bawah ini sekreatif mungkin, kemudian beri nama/keterangan gambar di bawah kanvas.</p>
+            </div>
+            <div class="wartegg-grid" id="wartegg-canvas-grid">
+              <!-- 8 Kotak Wartegg di-inject via JS -->
+            </div>
+            <div style="text-align: center; margin-top: 1.5rem;">
+              <button class="btn btn-secondary" onclick="clearWartegg()"><i data-lucide="trash-2"></i> Hapus Semua Kanvas</button>
+            </div>
+          </div>
+
+          <!-- DRAWING TEST CONTAINER -->
+          <div id="drawing-container" class="drawing-container hide">
+            <div class="kraepelin-instruction-bar" style="margin-bottom:1.5rem;">
+              <p><i data-lucide="info"></i> Gunakan mouse/sentuhan jari Anda untuk menggambar pada area papan sketsa di bawah ini sesuai perintah soal.</p>
+            </div>
+            <div class="drawing-prompt-header" style="margin-bottom: 1.5rem; text-align: center;">
+              <h4 id="drawing-prompt-instruction" style="color:var(--secondary-color); font-family:var(--font-display); font-size:1.2rem;">Perintah: Menggambar Orang Lengkap</h4>
+              <p style="color:var(--text-muted); font-size:0.85rem;">(Gambar seluruh bagian tubuh secara detail termasuk aktivitas/profesinya)</p>
+            </div>
+            <div class="sketch-board-wrapper" style="display:flex; justify-content:center; margin-bottom:1.5rem;">
+              <canvas id="sketch-canvas" width="600" height="400" style="background:#FFFFFF; border-radius:8px; border:2px solid var(--secondary-color); cursor:crosshair;"></canvas>
+            </div>
+            <div style="display:flex; justify-content:center; gap:1rem;">
+              <button class="btn btn-secondary" onclick="clearSketchCanvas()"><i data-lucide="trash-2"></i> Hapus Sketsa</button>
+              <button class="btn btn-success" id="btn-next-drawing" onclick="submitDrawingStep()">Selesai & Lanjut <i data-lucide="arrow-right"></i></button>
             </div>
           </div>
 

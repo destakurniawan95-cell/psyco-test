@@ -900,6 +900,70 @@ body {
   transform: scale(0.95);
 }
 
+}
+
+/* WARTEGG & SKETCH TEST STYLING */
+.wartegg-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.wartegg-box {
+  background: #FFFFFF;
+  border-radius: 8px;
+  border: 2px solid var(--glass-border);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+.wartegg-box:hover {
+  border-color: var(--secondary-color);
+  transform: translateY(-2px);
+}
+
+.wartegg-box canvas {
+  background: #FFFFFF;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  cursor: crosshair;
+}
+
+.wartegg-input {
+  width: 100%;
+  padding: 0.4rem;
+  border: 1px solid #CCC;
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 0.8rem;
+  text-align: center;
+  color: #333;
+}
+
+.wartegg-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+@media (max-width: 900px) {
+  .wartegg-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .wartegg-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* RESULTS & ANALYSIS */
 #simulasi-result {
   max-width: 950px;

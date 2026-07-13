@@ -1100,3 +1100,258 @@ function renderHistoryTable() {
   saranContainer.innerHTML = saranHTML;
   if (window.lucide) window.lucide.createIcons();
 }
+
+// 7. WARTEGG & DRAWING SKETCH CANVAS IMPLEMENTATION
+let isDrawing = false;
+let lastX = 0;
+let lastY = 0;
+let currentDrawingStep = 0; // 0: Orang, 1: Pohon, 2: Rumah
+const drawingSteps = [
+  { title: "Menggambar Orang Lengkap", desc: "Gambarlah seluruh tubuh manusia secara detail (kepala, badan, tangan, kaki) lengkap dengan aktivitas atau profesinya." },
+  { title: "Menggambar Pohon Berkambium", desc: "Gambarlah sebuah pohon berkayu/berkambium lengkap dengan akar, batang, dahan, ranting, daun, dan buah jika ada." },
+  { title: "Menggambar Rumah, Pohon, & Orang (HTP)", desc: "Gambarlah sebuah rumah, pohon, dan orang dalam satu kesatuan lanskap gambar secara harmonis." }
+];
+
+// Start Wartegg Test
+function startWarteggTest() {
+  appState.currentTestType = 'wartegg';
+  clearInterval(appState.timerInterval);
+
+  document.getElementById('simulasi-selection').classList.add('hide');
+  document.getElementById('simulasi-result').classList.add('hide');
+  document.getElementById('simulasi-running').classList.remove('hide');
+  document.getElementById('soal-container').classList.add('hide');
+  document.getElementById('kraepelin-container').classList.add('hide');
+  document.getElementById('wartegg-container').classList.remove('hide');
+  document.getElementById('drawing-container').classList.add('hide');
+  
+  // Set Navigation
+  document.getElementById('running-test-title').innerText = 'Simulasi Tes Wartegg (Melengkapi Gambar)';
+  document.getElementById('running-progress-fill').style.width = '100%';
+  document.querySelector('.timer-card').classList.add('hide');
+
+  document.getElementById('btn-prev').classList.add('hide');
+  document.getElementById('btn-next').classList.add('hide');
+  document.getElementById('btn-submit').classList.remove('hide');
+
+  // Build 8 Wartegg Boxes
+  const grid = document.getElementById('wartegg-canvas-grid');
+  grid.innerHTML = '';
+
+  const cues = [
+    (ctx) => { ctx.beginPath(); ctx.arc(75, 75, 2, 0, Math.PI*2); ctx.fill(); }, // Box 1: Titik di tengah
+    (ctx) => { ctx.beginPath(); ctx.moveTo(25, 45); ctx.quadraticCurveTo(50, 20, 75, 45); ctx.stroke(); }, // Box 2: Garis gelombang
+    (ctx) => { ctx.beginPath(); ctx.moveTo(35, 70); ctx.lineTo(35, 50); ctx.moveTo(50, 70); ctx.lineTo(50, 40); ctx.moveTo(65, 70); ctx.lineTo(65, 30); ctx.stroke(); }, // Box 3: Tangga naik
+    (ctx) => { ctx.fillRect(100, 30, 20, 20); }, // Box 4: Kotak hitam kecil kanan atas
+    (ctx) => { ctx.beginPath(); ctx.moveTo(30, 110); ctx.lineTo(70, 70); ctx.moveTo(40, 70); ctx.lineTo(80, 110); ctx.stroke(); }, // Box 5: Dua garis diagonal bersilang
+    (ctx) => { ctx.beginPath(); ctx.moveTo(30, 60); ctx.lineTo(100, 60); ctx.moveTo(100, 60); ctx.lineTo(100, 110); ctx.stroke(); }, // Box 6: Garis horizontal & vertikal siku
+    (ctx) => { ctx.beginPath(); ctx.setLineDash([2, 3]); ctx.arc(75, 75, 25, 0, Math.PI, true); ctx.stroke(); ctx.setLineDash([]); }, // Box 7: Setengah lingkaran putus-putus
+    (ctx) => { ctx.beginPath(); ctx.arc(75, 75, 30, 0, Math.PI/2); ctx.stroke(); } // Box 8: Busur melingkar kuadran kanan bawah
+  ];
+
+  for (let i = 0; i < 8; i++) {
+    const box = document.createElement('div');
+    box.className = 'wartegg-box';
+    box.innerHTML = `
+      <span style="font-family:var(--font-display); font-size:0.85rem; color:var(--primary-color); font-weight:700;">Kotak ${i+1}</span>
+      <canvas id="wartegg-canvas-${i}" width="150" height="150"></canvas>
+      <input type="text" class="wartegg-input" id="wartegg-desc-${i}" placeholder="Keterangan Gambar ${i+1}">
+    `;
+    grid.appendChild(box);
+
+    const canvas = document.getElementById(`wartegg-canvas-${i}`);
+    const ctx = canvas.getContext('2d');
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 2.5;
+    ctx.fillStyle = '#333';
+
+    // Draw Cue Stimulus
+    cues[i](ctx);
+
+    // Setup Canvas Drawing Listeners
+    setupCanvasDraw(canvas, ctx);
+  }
+
+  playSoundEffect('start');
+  speakInstruction("Tes Wartegg dimulai. Lengkapi pola stimulasi gambar pada kedelapan kotak sekreatif mungkin.");
+}
+
+function clearWartegg() {
+  if (confirm("Kosongkan seluruh kanvas Wartegg?")) {
+    startWarteggTest();
+  }
+}
+
+// Start Sketch Drawing Test
+function startDrawingTest() {
+  appState.currentTestType = 'gambar_sketch';
+  currentDrawingStep = 0;
+  clearInterval(appState.timerInterval);
+
+  document.getElementById('simulasi-selection').classList.add('hide');
+  document.getElementById('simulasi-result').classList.add('hide');
+  document.getElementById('simulasi-running').classList.remove('hide');
+  document.getElementById('soal-container').classList.add('hide');
+  document.getElementById('kraepelin-container').classList.add('hide');
+  document.getElementById('wartegg-container').classList.add('hide');
+  document.getElementById('drawing-container').classList.remove('hide');
+
+  document.getElementById('running-test-title').innerText = 'Simulasi Tes Menggambar (Proyektif)';
+  document.getElementById('running-progress-fill').style.width = '33%';
+  document.querySelector('.timer-card').classList.add('hide');
+
+  // Hide normal navigation buttons
+  document.getElementById('normal-navigation').classList.add('hide');
+
+  setupSketchCanvas();
+  updateDrawingStepView();
+
+  playSoundEffect('start');
+  speakInstruction("Tes Menggambar dimulai. Silakan ikuti instruksi gambar pertama.");
+}
+
+function setupSketchCanvas() {
+  const canvas = document.getElementById('sketch-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#000000';
+  ctx.lineWidth = 3;
+  ctx.lineCap = 'round';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  setupCanvasDraw(canvas, ctx);
+}
+
+function clearSketchCanvas() {
+  const canvas = document.getElementById('sketch-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+function updateDrawingStepView() {
+  const step = drawingSteps[currentDrawingStep];
+  document.getElementById('drawing-prompt-instruction').innerText = `Perintah: ${step.title}`;
+  document.getElementById('drawing-prompt-instruction').nextElementSibling.innerText = step.desc;
+  document.getElementById('running-progress-fill').style.width = `${((currentDrawingStep + 1) / 3) * 100}%`;
+  
+  if (currentDrawingStep === 2) {
+    document.getElementById('btn-next-drawing').innerHTML = 'Kirim Hasil Sketsa <i data-lucide="check"></i>';
+  } else {
+    document.getElementById('btn-next-drawing').innerHTML = 'Selesai & Lanjut <i data-lucide="arrow-right"></i>';
+  }
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function submitDrawingStep() {
+  if (currentDrawingStep < 2) {
+    currentDrawingStep++;
+    clearSketchCanvas();
+    updateDrawingStepView();
+    playSoundEffect('tick');
+    speakInstruction(`Lanjut ke perintah berikutnya: ${drawingSteps[currentDrawingStep].title}`);
+  } else {
+    finishDrawingTest();
+  }
+}
+
+function finishDrawingTest() {
+  playSoundEffect('finish');
+  
+  const resultData = {
+    date: new Date().toLocaleString('id-ID'),
+    category: appState.currentTestType === 'wartegg' ? 'Tes Wartegg' : 'Tes Menggambar (HTP)',
+    score: 100, // Proyektif/Karakteristik selalu 100 karena dinilai secara kualitatif manual
+    accuracy: '100%',
+    status: 'MS',
+    details: {
+      proyektif: true
+    }
+  };
+
+  appState.riwayat.push(resultData);
+  saveHistoryToStorage();
+
+  document.getElementById('simulasi-running').classList.add('hide');
+  document.getElementById('simulasi-result').classList.remove('hide');
+  document.getElementById('pembahasan-section').classList.add('hide');
+
+  document.getElementById('result-category').innerText = resultData.category;
+  document.getElementById('result-score').innerText = 'Kualitatif';
+  document.getElementById('result-accuracy').innerText = 'Selesai';
+  document.getElementById('result-time-taken').innerText = 'Mandiri';
+
+  const seal = document.getElementById('result-seal-status');
+  const statusTitle = document.getElementById('result-status-title');
+  const statusDesc = document.getElementById('result-status-desc');
+  const evalBox = document.getElementById('result-evaluation-box');
+
+  seal.innerText = "MS";
+  seal.className = "result-seal";
+  statusTitle.innerText = "Tes Sketsa Selesai";
+  statusDesc.innerText = "Gambar sketsa proyektif Anda telah berhasil tersimpan.";
+
+  if (appState.currentTestType === 'wartegg') {
+    evalBox.innerHTML = `<strong>Karakteristik Analisis Wartegg:</strong><br>
+    - Kotak 1 & 2 menunjukkan adaptabilitas sosial Anda.<br>
+    - Kotak 3 & 4 menunjukkan dorongan prestasi (achievement motivation) dan ambisi karir.<br>
+    - Kotak 5 & 6 mencerminkan daya tahan memecahkan masalah (problem solving).<br>
+    - Kotak 7 & 8 mencerminkan stabilitas emosional dan hubungan interpersonal Anda.`;
+  } else {
+    evalBox.innerHTML = `<strong>Karakteristik Analisis Sketsa (HTP/DAP/DAT):</strong><br>
+    - Detail gambar orang mencerminkan rasa percaya diri dan persepsi peran sosial.<br>
+    - Struktur pohon berkambium mencerminkan kekuatan ego, kematangan kepribadian, dan hubungan keluarga.<br>
+    - Integrasi Rumah-Pohon-Orang (HTP) mengukur keharmonisan interaksi Anda dengan lingkungan hidup.`;
+  }
+
+  renderResultChart(resultData);
+}
+
+// Canvas Drawing Handler Helper (Supports mouse & touch)
+function setupCanvasDraw(canvas, ctx) {
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top
+    };
+  }
+
+  function drawStart(e) {
+    e.preventDefault();
+    isDrawing = true;
+    const pos = getPos(e);
+    lastX = pos.x;
+    lastY = pos.y;
+  }
+
+  // Draw line to current coordinates
+  function draw(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastX, lastY);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    lastX = pos.x;
+    lastY = pos.y;
+  }
+
+  function drawEnd() {
+    isDrawing = false;
+  }
+
+  // Mouse Listeners
+  canvas.addEventListener('mousedown', drawStart);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', drawEnd);
+  canvas.addEventListener('mouseout', drawEnd);
+
+  // Touch Listeners
+  canvas.addEventListener('touchstart', drawStart, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', drawEnd);
+}
