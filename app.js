@@ -968,6 +968,16 @@ function backToSelection() {
   document.getElementById('simulasi-selection').classList.remove('hide');
 }
 
+function exitActiveTest() {
+  if (confirm("Apakah Anda yakin ingin keluar dari tes yang sedang berjalan? Progres pengerjaan saat ini tidak akan disimpan.")) {
+    clearInterval(appState.timerInterval);
+    document.getElementById('simulasi-running').classList.add('hide');
+    document.getElementById('wartegg-container').classList.add('hide');
+    document.getElementById('drawing-container').classList.add('hide');
+    document.getElementById('simulasi-selection').classList.remove('hide');
+  }
+}
+
 // 6. STORAGE & HISTORY MANAGEMENT
 function loadHistoryFromStorage() {
   const stored = localStorage.getItem('ksatria_history');
